@@ -78,7 +78,6 @@ public class Enemy_R : MonoBehaviour
         dir.y = 0;
         Quaternion aim = Quaternion.LookRotation(dir);
         transform.rotation = aim;
-       // transform.LookAt(player);
 
         if (!alreadyAttacked)
         {
@@ -98,10 +97,13 @@ public class Enemy_R : MonoBehaviour
         alreadyAttacked = false;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int amount)
     {
-        health -= damage;
-        if (health < -0) Invoke(nameof(DestroyEnemy), .5f);
+        health -= amount;
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void DestroyEnemy()
@@ -116,4 +118,5 @@ public class Enemy_R : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
     }
+
 }

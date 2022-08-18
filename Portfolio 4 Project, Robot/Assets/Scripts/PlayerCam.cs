@@ -7,6 +7,7 @@ public class PlayerCam : MonoBehaviour
     public float senseX, senseY;
     public Transform orientation;
     float xRotation, yRotation;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,14 +19,16 @@ public class PlayerCam : MonoBehaviour
     void Update()
     {
         //mouse input
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * senseX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * senseY;
+        float mouseX = Input.GetAxisRaw("TurretX") * Time.deltaTime * senseX;
+        float mouseY = Input.GetAxisRaw("TurretY") * Time.deltaTime * senseY;
         yRotation += mouseX;
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90);
-        //cam orient
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
-        //transform.Rotate(mouseY, 0, 0);
+
+
+        //finally got him turning the right way, this was needed
+        Quaternion qy = Quaternion.AngleAxis(mouseX, Vector3.up);
+        transform.Rotate(Vector3.up, mouseX * -1, Space.World);
+        transform.Rotate(transform.forward, mouseY, Space.World);
+
     }
 }

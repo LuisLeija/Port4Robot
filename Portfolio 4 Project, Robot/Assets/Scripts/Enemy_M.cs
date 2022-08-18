@@ -73,6 +73,8 @@ public class Enemy_M : MonoBehaviour
 
     private void AttackPlayer()
     {
+
+
         agent.SetDestination(transform.position);
         Vector3 dir = player.position - transform.position;
         dir.y = 0;
@@ -81,11 +83,8 @@ public class Enemy_M : MonoBehaviour
 
         if (!alreadyAttacked)
         {
-            //attack code
-            //Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
-            //rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
-            //rb.AddForce(transform.up * 8f, ForceMode.Impulse);
-
+            
+            
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
@@ -97,10 +96,14 @@ public class Enemy_M : MonoBehaviour
         alreadyAttacked = false;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int amount)
     {
-        health -= damage;
-        if (health < -0) Invoke(nameof(DestroyEnemy), .5f);
+        health -= amount;
+        //if (health <= 0) Invoke(nameof(DestroyEnemy), .5f);
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void DestroyEnemy()
@@ -115,4 +118,22 @@ public class Enemy_M : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
     }
+
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    PlayerMovement player = collision.transform.root.GetComponent<PlayerMovement>();
+    //    if (player != null)
+    //    {
+    //        player.TakeDamage(20);
+    //    }
+    //    Destroy(gameObject);
+    //}
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    PlayerMovement player = collision.transform.root.GetComponent<PlayerMovement>();
+    //    if (player != null)
+    //    {
+    //        player.TakeDamage(20);
+    //    }
+    //}
 }
