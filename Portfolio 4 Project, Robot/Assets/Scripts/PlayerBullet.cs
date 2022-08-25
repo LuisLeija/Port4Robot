@@ -5,10 +5,11 @@ using UnityEngine;
 public class PlayerBullet : MonoBehaviour
 {
     Rigidbody rb;
+    Killcounter killcount;
 
-    // Start is called before the first frame update
     void Start()
     {
+        killcount = GameObject.Find("KCO").GetComponent<Killcounter>();
         rb = GetComponent<Rigidbody>();
         rb.AddForce(transform.right * 50, ForceMode.VelocityChange);
         Destroy(gameObject, 5);
@@ -23,10 +24,20 @@ public class PlayerBullet : MonoBehaviour
         if (melee != null)
         {
             melee.TakeDamage(20);
+            if (melee.health <= 0)
+            {
+                killcount.AddKill();
+                Destroy(melee.gameObject); 
+            }
         }
         else if (ranged != null)
         {
             ranged.TakeDamage(20);
+            if (ranged.health <= 0)
+            {
+                killcount.AddKill();
+                Destroy(ranged.gameObject);
+            }
         }
         Destroy(gameObject);
     }

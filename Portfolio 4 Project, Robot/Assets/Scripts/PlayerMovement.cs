@@ -7,10 +7,10 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("COMBAT STATS")]
-    [SerializeField] int health;
+    [SerializeField] public float health;
+    public float currHealth;
     [SerializeField] int damage;
-
-    public float timeBetweenAttacks;
+    [SerializeField] float attackCD = .1f;
     public GameObject projectile;
     public Transform shootLocation;
 
@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform orientation;
     float horizontalInput, verticalInput;
     Vector3 moveDirection;
+    private Animator anim;
 
     Rigidbody rb;
     [SerializeField] Transform robot;
@@ -26,11 +27,12 @@ public class PlayerMovement : MonoBehaviour
     public float xAngle;
 
     float nextAttackTime = 0;
-    [SerializeField] float attackCD = .1f;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
     }
@@ -39,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     {
         MyInput();
         SpeedControl();
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button5))
         {
             if (Time.time > nextAttackTime)
             {
@@ -47,48 +49,49 @@ public class PlayerMovement : MonoBehaviour
                 nextAttackTime = Time.time + attackCD;
             }
         }
-
-
-    }
-
-    private void FixedUpdate()
-    {
-        MovePlayer();
     }
 
     public void TakeDamage(int amount)
     {
-        health -= amount;
-        if (health <= 0)
+        currHealth -= amount;
+        if (currHealth <= 0)
         {
-             print("youdied");
+            print("youdied");
             float timer = Time.deltaTime;
             timer = 20f;
             SceneManager.LoadScene("Menu");
-           
         }
     }
 
-    private void MyInput()
+    private bool MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
+        if (horizontalInput > .19 || verticalInput > .19)
+        {
+            MovePlayer();
+            return true;
+        }
+        else if (horizontalInput < -.19 || verticalInput < -.19)
+        {
+            MovePlayer();
+            return true;
+        }
+        else
+        {
+            anim.SetBool("IsMoving?", false);
+            return false;
+        }
     }
 
     private void MovePlayer()
     {
+
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         rb.AddForce(moveDirection.normalized * movespeed * 10f, ForceMode.Acceleration);
-        //robot.forward = -orientation.forward;
         transform.Rotate(Vector3.up, horizontalInput * Time.deltaTime * 180);
-        
-        //xAngle += verticalInput * Time.deltaTime * 180;
-        //if (Mathf.Abs(xAngle)<90)
-        //{
-        //    head.transform.rotation = Quaternion.Euler(xAngle, 0, 0);
+        anim.SetBool("IsMoving?", true);
 
-        //    //head.Rotate(transform.right,xAngle, Space.World);
-        //}
     }
 
     private void SpeedControl()

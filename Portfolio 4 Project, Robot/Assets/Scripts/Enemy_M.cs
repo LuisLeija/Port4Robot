@@ -18,7 +18,8 @@ public class Enemy_M : MonoBehaviour
     //attacking stuff
     public float timeBetweenAttacks;
     bool alreadyAttacked;
-    //public GameObject projectile;
+    public GameObject projectile;
+    public Transform shootLocation;
 
     //states
     public float sightRange, attackRange;
@@ -29,7 +30,6 @@ public class Enemy_M : MonoBehaviour
     {
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
-        //agent.updateRotation = false;
     }
 
     private void Update()
@@ -73,22 +73,22 @@ public class Enemy_M : MonoBehaviour
 
     private void AttackPlayer()
     {
-
-
         agent.SetDestination(transform.position);
         Vector3 dir = player.position - transform.position;
         dir.y = 0;
-        Quaternion potato = Quaternion.LookRotation(dir);
-        transform.rotation = potato;
+        Quaternion aim = Quaternion.LookRotation(dir);
+        transform.rotation = aim;
 
         if (!alreadyAttacked)
         {
-            
-            
+            //attack code
+            Rigidbody rb = Instantiate(projectile, shootLocation.transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+            rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+            rb.AddForce(transform.up * 2f, ForceMode.Impulse);
+
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
-
     }
 
     private void ResetAttack()
@@ -99,10 +99,20 @@ public class Enemy_M : MonoBehaviour
     public void TakeDamage(int amount)
     {
         health -= amount;
-        //if (health <= 0) Invoke(nameof(DestroyEnemy), .5f);
-        if (health <= 0)
+
+        Collider[] cols = Physics.OverlapSphere(transform.position, 40);
+        for (int i = 0; i < cols.Length; i++)
         {
-            Destroy(gameObject);
+            Enemy_M em = cols[i].GetComponent<Enemy_M>();
+            if(em != null)
+            {
+                em.sightRange = 200;
+            }
+            Enemy_R er = cols[i].GetComponent<Enemy_R>();
+            if (er != null)
+            {
+                er.sightRange = 200;
+            }
         }
     }
 
@@ -118,22 +128,4 @@ public class Enemy_M : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
     }
-
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    PlayerMovement player = collision.transform.root.GetComponent<PlayerMovement>();
-    //    if (player != null)
-    //    {
-    //        player.TakeDamage(20);
-    //    }
-    //    Destroy(gameObject);
-    //}
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    PlayerMovement player = collision.transform.root.GetComponent<PlayerMovement>();
-    //    if (player != null)
-    //    {
-    //        player.TakeDamage(20);
-    //    }
-    //}
 }

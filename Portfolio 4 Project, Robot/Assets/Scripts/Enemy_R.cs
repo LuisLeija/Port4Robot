@@ -89,7 +89,6 @@ public class Enemy_R : MonoBehaviour
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
-
     }
 
     private void ResetAttack()
@@ -100,9 +99,20 @@ public class Enemy_R : MonoBehaviour
     public void TakeDamage(int amount)
     {
         health -= amount;
-        if (health <= 0)
+
+        Collider[] cols = Physics.OverlapSphere(transform.position, 40);
+        for (int i = 0; i < cols.Length; i++)
         {
-            Destroy(gameObject);
+            Enemy_M em = cols[i].GetComponent<Enemy_M>();
+            if (em != null)
+            {
+                em.sightRange = 200;
+            }
+            Enemy_R er = cols[i].GetComponent<Enemy_R>();
+            if (er != null)
+            {
+                er.sightRange = 200;
+            }
         }
     }
 

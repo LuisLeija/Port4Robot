@@ -19,8 +19,8 @@ public class PlayerCam : MonoBehaviour
     void Update()
     {
         //mouse input
-        float mouseX = Input.GetAxisRaw("TurretX") * Time.deltaTime * senseX;
-        float mouseY = Input.GetAxisRaw("TurretY") * Time.deltaTime * senseY;
+        float mouseX = Input.GetAxisRaw("TurretY") * Time.deltaTime * senseX;
+        float mouseY = Input.GetAxisRaw("TurretX") * Time.deltaTime * senseY;
         yRotation += mouseX;
         xRotation -= mouseY;
 
@@ -28,7 +28,6 @@ public class PlayerCam : MonoBehaviour
         //finally got him turning the right way, this was needed
         Quaternion qy = Quaternion.AngleAxis(mouseX, Vector3.up);
         transform.Rotate(Vector3.up, mouseX * -1, Space.World);
-        transform.Rotate(transform.forward, mouseY, Space.World);
-
+        transform.Rotate(transform.forward, mouseY * -1, Space.World);
     }
 }
