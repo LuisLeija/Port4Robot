@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform robot;
     [SerializeField] Transform head;
     public float xAngle;
+    public Transform animRob;
 
     float nextAttackTime = 0;
 
@@ -32,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PlatformController.singleton.Init("COM5", 115200);
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
@@ -39,15 +41,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        float heave = PlatformController.singleton.MapRange(animRob.position.y,0.12f, 0.3f, -5, 5);
+        PlatformController.singleton.floatValues[2] = heave;
+        
         MyInput();
         SpeedControl();
         if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button5))
         {
+            //PlatformController.singleton.floatValues[0] = Random.Range(-1f, 1f);
             if (Time.time > nextAttackTime)
             {
                 Fire();
+                SoundManager.PlaySound("SingleShotMachinegun");
+                PlatformController.singleton.floatValues[1] = -8;
                 nextAttackTime = Time.time + attackCD;
             }
+            PlatformController.singleton.floatValues[1] *= 0.95f;
+
+        }
+        else
+        {
+            PlatformController.singleton.floatValues[1] = 0;
         }
     }
 

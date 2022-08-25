@@ -26,6 +26,7 @@ public class PlayerBullet : MonoBehaviour
             melee.TakeDamage(20);
             if (melee.health <= 0)
             {
+                SoundManager.PlaySound("Splat");
                 killcount.AddKill();
                 Destroy(melee.gameObject); 
             }
@@ -35,6 +36,7 @@ public class PlayerBullet : MonoBehaviour
             ranged.TakeDamage(20);
             if (ranged.health <= 0)
             {
+                SoundManager.PlaySound("Squeal");
                 killcount.AddKill();
                 Destroy(ranged.gameObject);
             }

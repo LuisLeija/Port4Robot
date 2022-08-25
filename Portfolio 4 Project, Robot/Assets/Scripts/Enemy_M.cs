@@ -15,6 +15,7 @@ public class Enemy_M : MonoBehaviour
     bool walkPointSet;
     public float walkPointRange;
 
+
     //attacking stuff
     public float timeBetweenAttacks;
     bool alreadyAttacked;
